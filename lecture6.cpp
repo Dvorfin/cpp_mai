@@ -3,59 +3,58 @@
 #include <vector>
 #include <mutex>
 
+
 using namespace std;
 
 vector <int> vct(50);
 
 mutex mut;
 
-int increase(int i) 
+void increaseVector() 
 {
-    mut.lock();
+   mut.lock();
 
-    cout << "increase value from  " << i; 
+    cout << "THREAD ID: " << this_thread::get_id() << endl;
 
-    vct.at(i) = i*10;
+    for (int i = 0; i < 50; i++) 
+    {
+        cout << "increase value from  " << i; 
+        vct.at(i) = i*10;
+        cout << "  to " << vct.at(i) << endl;
 
-    cout << "  to " << vct.at(i) << endl;
-
-    mut.unlock();
+    }
+   
+   mut.unlock();
 
 }
 
-int decrease(int i)
+void showVector()
 {
     mut.lock();
 
-    cout << "\t\t\t\tvector value " << i << "  " << vct.at(i) << endl;
+    cout << "\t\t\t\tTHREAD ID: " << this_thread::get_id() << endl;
 
-    //vct.at(i) = vct.at(i) - 5;
-
-    
-
+    for(int i = 0; i < 50; i++) 
+    {
+        cout << "\t\t\t\tvector value " << i << "  " << vct.at(i) << endl;
+    }
+  
     mut.unlock();
 
 }
 
 
 int main() {
-
     
+    thread th1(increaseVector);
 
-    for (int i = 0; i < 50; i++) 
-    {
-         thread th1(increase, std::ref(i));
+    thread th2(showVector);
 
-         thread th2(decrease, std::ref(i));
+    th1.join();
 
-         th1.join();
+    th2.join();
 
-         th2.join();
-    }
+    cout << "UI ID: " << this_thread::get_id << endl;
    
-
-   
-   
-
 
 }
