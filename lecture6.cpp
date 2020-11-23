@@ -5,7 +5,7 @@
 
 using namespace std;
 
-vector <int> vct(20);
+vector <int> vct(50);
 
 mutex mut;
 
@@ -27,11 +27,11 @@ int decrease(int i)
 {
     mut.lock();
 
-    cout << "decrease value from  " << vct.at(i);
+    cout << "\t\t\t\tvector value " << i << "  " << vct.at(i) << endl;
 
-    vct.at(i) = vct.at(i) - 5;
+    //vct.at(i) = vct.at(i) - 5;
 
-    cout << "  to " << vct.at(i) << endl;
+    
 
     mut.unlock();
 
@@ -42,7 +42,7 @@ int main() {
 
     
 
-    for (int i = 0; i < 20; i++) 
+    for (int i = 0; i < 50; i++) 
     {
          thread th1(increase, std::ref(i));
 
@@ -54,11 +54,7 @@ int main() {
     }
    
 
-    for (int j = 0; j < 20; j++)
-    {
-        cout << vct.at(j) << endl;
-    }
-
+   
    
 
 
