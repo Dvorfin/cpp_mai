@@ -3,7 +3,6 @@
 #include <vector>
 #include <mutex>
 
-
 using namespace std;
 
 vector <int> vct(50);
@@ -12,7 +11,7 @@ mutex mut;
 
 void increaseVector() 
 {
-   mut.lock();
+   lock_guard<mutex> guard(mut);
 
     cout << "THREAD ID: " << this_thread::get_id() << endl;
 
@@ -23,14 +22,12 @@ void increaseVector()
         cout << "  to " << vct.at(i) << endl;
 
     }
-   
-   mut.unlock();
 
 }
 
 void showVector()
 {
-    mut.lock();
+    lock_guard<mutex> guard(mut);
 
     cout << "\t\t\t\tTHREAD ID: " << this_thread::get_id() << endl;
 
@@ -38,8 +35,6 @@ void showVector()
     {
         cout << "\t\t\t\tvector value " << i << "  " << vct.at(i) << endl;
     }
-  
-    mut.unlock();
 
 }
 
@@ -56,5 +51,4 @@ int main() {
 
     cout << "UI ID: " << this_thread::get_id << endl;
    
-
 }
