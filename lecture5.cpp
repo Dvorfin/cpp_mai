@@ -2,14 +2,14 @@
 
 using namespace std;
 
-template <typename Type>
+template <class Type>
 
 class SmartPoint
 {
 
 public:
 
-    SmartPoint()
+	SmartPoint() : ptr(nullptr)
     {
         cout << "Smart pointer constructor" << endl;
     }
@@ -17,31 +17,103 @@ public:
     ~SmartPoint()
     {
         cout << "Smart pointer destructor" << endl;
-        delete ptr;
+        void clean();
     }
 
-    MakeSmartPtr(Type *outsidePtr)  // передаем указатель 
-    {
-        ptr = outsidePtr;
-    }
+	void clean() // метод удаления указателя
+	{
+		if (ptr != nullptr) // если не пустой
+		{
+			delete ptr; // то удалеям
+		}
+	}
 
-    Type GetValue(int i) // получаем данные из массива
-    {
-        return ptr[i];
-    }
+    Type& operator* ()  // возвращаем значение, лежащее по указателю
+	{
+		return *(this->ptr); 
+	}
 
-    void PutValue(int i, Type data) // помещаем данные в массив 
-    {
-        ptr[i] = data;
-    }
+	Type* operator-> ()  // возвращаем указатель
+	{
+		return this->ptr;
+	}
+
+	void MakeSmartPtr(Type *outsidePtr)
+	{
+		this->ptr = outsidePtr;
+	}
+
+	SmartPoint(const SmartPoint &object) = delete;  // удаление коснтруктора копирования и присваивания
+	SmartPoint &operator=(const SmartPoint &object) = delete;
 
 private:
 
-    Type *ptr;
+    Type *ptr = nullptr;
 
 };
 
-SmartPoint<int> pointer;  // создаем объект класса умного указателя типа int
+template <class Type>
+
+class SmartPoint<Type[]>
+{
+
+public:
+
+    SmartPoint() : ptr(nullptr)
+    {
+        cout << "Smart pointer constructor" << endl;
+    }
+
+    ~SmartPoint()
+    {
+        cout << "Smart pointer destructor" << endl;
+        void clean();
+    }
+
+	void clean() // метод удаления указателя
+	{
+		if (ptr != nullptr) // если не пустой
+		{
+			delete[] ptr; // то удалеям
+		}
+	}
+
+    Type& operator* ()  // возвращаем значение, лежащее по указателю
+	{
+		return *(this->ptr); 
+	}
+
+	Type* operator-> ()  // возвращаем указатель
+	{
+		return this->ptr;
+	}
+
+	Type& operator[] (int index)
+	{
+		if (index < 0) 
+		{
+			cerr << "Index below zero!" << endl;
+			exit(0);
+		}
+
+		return this->ptr[index];
+	}
+
+	void MakeSmartPtr(Type *outsidePtr)
+	{
+		this->ptr = outsidePtr;
+	}
+
+	SmartPoint(const SmartPoint &object) = delete;  // удаление коснтруктора копирования и присваивания
+	SmartPoint &operator=(const SmartPoint &object) = delete;
+
+private:
+
+    Type *ptr = nullptr;
+
+};
+
+SmartPoint<int[]> pointer;  // создаем объект класса умного указателя типа int
 
 class Image 
 {
@@ -56,7 +128,7 @@ public:
 	Image(int tmx, int tmy) 
     {       
 
-		pointer.MakeSmartPtr(new int[tmx*tmy]());   // создание динамического массива под размеры пользователя
+		pointer.MakeSmartPtr(new int[tmx*tmy]());   // создание динамического массивыа под размеры пользователя
 		cout << "IMAGE CONSTRUCTOR" << endl;
     
     }
@@ -65,7 +137,7 @@ public:
     {
         for (int i = 0; i < mx*my; i++) 
         {
-			pointer.PutValue(i, rand()%2);  // вводим значения в массив
+			pointer[i] = rand()%2;
 		}
 
 	}
@@ -93,7 +165,7 @@ public:
 		
 		for (int i = 0; i < mx*my; i++) 
         {
-			cout << pointer.GetValue(i); // выводим значения массива
+			cout << pointer[i];
 			counter++;
 
 			if (counter == mx) 
@@ -128,13 +200,16 @@ int main() {
 
 	Image a(size_mx, size_my);
 
-  a.getMx(size_mx);
+    a.getMx(size_mx);
 	a.getMy(size_my);
 
-  a.makeImg();
+    a.makeImg();
 	
 	a.show();
 	
+	cout << "pointer =  " << pointer[3] << endl;
+	
+
 	return 0;
 
 }
